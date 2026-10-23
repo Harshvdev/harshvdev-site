@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# harshvdev-site
 
-## Getting Started
+My professional site. Built with **Next.js (App Router) + TypeScript + Tailwind CSS + Framer Motion**, deployed on **Vercel**.
 
-First, run the development server:
+Multi-page: Home, Projects, Media, Games, Contact, Donate. Light theme by default, with a dark mode toggle.
+
+## Run it
+
+This project uses **Bun** (`packageManager` is set to bun, so Vercel picks it up automatically).
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install
+bun run dev      # http://localhost:3000
+bun run build    # production build (also typechecks)
+bun run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## What's live vs. what's yours to edit
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Auto-fetched (no edits needed):**
+- **Projects** — pulled from the GitHub API for `Harshvdev`, revalidated hourly. Forks and a few internal repos are filtered out.
+- **Media** — pulled from the YouTube channel feed for `@harshvdev`. Click-to-play embeds (nothing loads until you press play).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Yours to edit:**
 
-## Learn More
+| What | File |
+| --- | --- |
+| Name, bio, email, socials, donation links | `src/lib/site.ts` |
+| Project categories, blurbs, which are featured/hidden | `src/lib/curated.ts` |
+| Colors, type, theme tokens | `src/app/globals.css` |
+| Where a game is actually playable | `src/app/games/page.tsx` (`playTargets`) |
 
-To learn more about Next.js, take a look at the following resources:
+## Editing content
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Change a project's description or category** → add/adjust an entry in `src/lib/curated.ts`. Anything missing falls back to its GitHub description under "Experiments", so adding a repo never breaks the page.
+- **Add a social link** → push an object into `socials` in `src/lib/site.ts`.
+- **Add a donation method** → push an object into `donate` in `src/lib/site.ts`.
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Push to the `Harshvdev/harshvdev-site` repo, then import it at [vercel.com/new](https://vercel.com/new). Vercel auto-detects Next.js — no config needed. Set the production domain in `site.siteUrl` (`src/lib/site.ts`) for correct SEO/Open Graph tags.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Notes
+
+- Uses Next 16's **Cache Components** model: data functions use `'use cache'` + `cacheLife('hours')` instead of the older `export const revalidate`. This is why you won't find `revalidate` segment configs.
+- All routes prerender as static and refresh hourly — fast pages, fresh content, no server needed.
